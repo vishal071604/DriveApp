@@ -36,7 +36,7 @@ A cloud storage web application built using the MERN Stack. It allows users to r
 
 ## Folder Structure
 
-CreateX/
+DriveApp/
 ├── Backend/
 │   ├── config/
 │   ├── controllers/
@@ -58,7 +58,7 @@ CreateX/
 
 ### Clone the repository
 
-git clone https://github.com/your-username/CreateX.git
+git clone (https://github.com/vishal071604/DriveApp.git)
 
 ### Backend Setup
 
