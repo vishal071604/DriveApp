@@ -49,7 +49,7 @@ export const login = async (req, res) => {
     // create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
-    });
+    }); // 7 days jwt.sign(id,secret,expires)
 
     res
       .cookie("token", token, {
@@ -62,6 +62,7 @@ export const login = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 export const logout = async (req, res) => {
   try {
