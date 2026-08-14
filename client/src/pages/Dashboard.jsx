@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(null);
+  const navigate = useNavigate();
 
   const API = "http://localhost:3000/api";
 
@@ -17,7 +19,7 @@ export default function Dashboard() {
     } catch (err) {
       console.log(err);
       alert("Please login first");
-      window.location.href = "/";
+      navigate("/login");
     }
   };
 
@@ -53,12 +55,12 @@ export default function Dashboard() {
   // ✅ ADD HERE
   const logout = async () => {
     try {
-      await axios.post(`${API}/auth/logout`, {}, {
-        withCredentials: true,
+      await axios.post(`${API}/auth/logout`, {
+        withCredentials: true,// to send the cookie
       });
 
       alert("Logout successful");
-      window.location.href = "/";
+      navigate("/login");
     } catch (err) {
       console.log(err);
       alert("Logout failed");
@@ -67,6 +69,10 @@ export default function Dashboard() {
 
   // existing code...
 
+
+
+
+  
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-gray-900 text-white p-4 flex justify-between">
