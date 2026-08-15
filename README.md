@@ -1,152 +1,105 @@
-# Drive App
+# ☁️ DriveApp
 
-A cloud storage web application built using the MERN Stack. It allows users to register, login, upload files, view uploaded files, and delete their own files securely.
+### A Secure Cloud Storage Web Application
 
-## Features
+DriveApp is a cloud storage web application built using the **MERN Stack**. It allows users to securely register, log in, upload files, view their uploaded files, and delete files.
 
-- User Register and Login
+The application uses **JWT authentication, cookies, MongoDB, and ImageKit** to provide secure user authentication and cloud-based file storage.
+
+---
+
+## 🚀 Features
+
+### 🔐 Authentication
+
+- User Registration
+- User Login
 - JWT Authentication
-- Cookie-based Auth System
+- Cookie-Based Authentication
+- Protected Routes
+- User Profile
+- Secure Logout
+
+### 📁 File Management
+
 - Upload Files
 - View Uploaded Files
 - Delete Files
-- User-specific File Access
-- Protected Routes
-- ImageKit File Storage
+- User-Specific File Access
+- File Ownership Verification
+- Cloud File Storage
+
+### ☁️ Cloud Storage
+
+- ImageKit Integration
+- Secure File Upload
+- File URLs stored in MongoDB
+- Multer File Handling
+- User-specific file management
+
+### 🎨 Frontend
+
 - Responsive UI
-
-## Tech Stack
-
-**Frontend**
 - React.js
 - Vite
 - Tailwind CSS
-- Axios
-- React Router DOM
+- React Router
+- Axios API Integration
 
-**Backend**
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT
-- Cookie Parser
-- Multer
-- ImageKit
+---
 
-## Folder Structure
+## 🛠️ Tech Stack
 
-DriveApp/
-├── Backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── server.js
-│   └── .env
-│
-├── Frontend/
-│   ├── src/
-│   ├── public/
-│   ├── vite.config.js
-│   └── package.json
-│
-└── README.md
+### Frontend
 
-## Installation
+| Technology | Purpose |
+|------------|---------|
+| React.js | User Interface |
+| Vite | Development & Build Tool |
+| Tailwind CSS | Styling |
+| Axios | API Requests |
+| React Router DOM | Client-side Routing |
 
-### Clone the repository
+### Backend
 
-git clone (https://github.com/vishal071604/DriveApp.git)
+| Technology | Purpose |
+|------------|---------|
+| Node.js | Runtime Environment |
+| Express.js | Backend Framework |
+| MongoDB | Database |
+| Mongoose | MongoDB ODM |
+| JWT | Authentication |
+| Cookie Parser | Cookie Management |
+| Multer | File Upload Handling |
+| ImageKit | Cloud File Storage |
 
-### Backend Setup
+---
 
-cd Backend
-npm install
+## 🏗️ Application Architecture
 
-Create a `.env` file inside Backend folder:
-
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-
-IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
-
-Run backend:
-
-npm run dev
-
-### Frontend Setup
-
-cd Frontend
-npm install
-npm run dev
-
-## Authentication Flow
-
-1. User registers or logs in.
-2. Backend creates a JWT token.
-3. Token is stored inside browser cookies.
-4. Protected routes check the token.
-5. Logged-in user can access files.
-
-## File Upload Flow
-
-1. User selects a file.
-2. Frontend sends file using FormData.
-3. Multer receives the file in backend memory.
-4. File is uploaded to ImageKit.
-5. File URL and details are saved in MongoDB.
-6. User can view and delete their files.
-
-## API Endpoints
-
-### Auth APIs
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | /api/auth/register | Register new user |
-| POST | /api/auth/login | Login user |
-| GET | /api/auth/profile | Get logged-in user profile |
-| POST | /api/auth/logout | Logout user |
-
-### File APIs
-
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | /api/files/upload | Upload file |
-| GET | /api/files | Get logged-in user's files |
-| DELETE | /api/files/:id | Delete file |
-
-## Security
-
-- Password hashing
-- JWT token verification
-- Cookie-based authentication
-- Protected backend routes
-- User ownership checking
-- Environment variables for secret keys
-
-## Future Improvements
-
-- Folder creation
-- File search
-- File sharing
-- Trash and restore option
-- Favorite files
-- File preview
-- Download option
-- Storage limit per user
-
-## Author
-
-Vishal S Kalawad
-
-Aspiring Full Stack MERN Developer.
-
-## License
-
-This project is licensed under the MIT License.
+```text
+                    ┌─────────────────┐
+                    │      User       │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ React Frontend  │
+                    │      Vite       │
+                    └────────┬────────┘
+                             │
+                        Axios API
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Express Backend │
+                    │    Node.js      │
+                    └────────┬────────┘
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+        ┌───────────────┐         ┌───────────────┐
+        │    MongoDB    │         │    ImageKit   │
+        │ Users + Files │         │ Cloud Storage │
+        └───────────────┘         └───────────────┘
