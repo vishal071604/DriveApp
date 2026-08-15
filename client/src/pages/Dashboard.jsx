@@ -103,7 +103,6 @@ export default function Dashboard() {
           {files.map((f) => (
             <div key={f._id} className="bg-white p-4 rounded shadow">
               <p className="font-medium truncate">{f.fileName}</p>
-              <p className="text-sm text-gray-500">{f.fileType}</p>
 
               <div className="flex justify-between mt-4">
                 <a
