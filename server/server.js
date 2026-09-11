@@ -1,68 +1,37 @@
 import "dotenv/config";
-
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import connectDB from "./database/db.js";
-
 import authRoutes from "./routes/authRoutes.js";
 import fileRoutes from "./routes/fileRoutes.js";
 
 const app = express();
-
 const PORT = process.env.PORT || 3000;
 
-const configuredClientOrigins = (process.env.CLIENT_URL || "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "http://localhost:3002",
-  "https://drive-app-one-zeta.vercel.app",
-  ...configuredClientOrigins,
-];
-
+// Database
 connectDB();
 
+// Middleware
 app.use(express.json());
-
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests without an Origin header
-      // such as Render health checks
-      if (!origin) {
-        return callback(null, true);
-      }
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
-
-    credentials: true,
-  })
-);
-
+// Routes
 app.use("/api/auth", authRoutes);
-
 app.use("/api/files", fileRoutes);
 
-// Home Route
+// Home
 app.get("/", (req, res) => {
-  res.json({
-    message: "Server running 🚀",
-  });
+    res.json({ message: "Server running" });
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });

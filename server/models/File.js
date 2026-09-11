@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 
 const fileSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  fileName: String,
-  fileUrl: String,
-  fileType: String,
-  size: Number,
-}, { timestamps: true });
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
+
+    fileName: String,
+    fileUrl: String,
+    fileType: String,
+    size: Number
+
+}, {
+    timestamps: true
+});
 
 export default mongoose.model("File", fileSchema);

@@ -1,249 +1,187 @@
-
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import API from "../services/api";
 
 export default function Dashboard() {
-  const [files, setFiles] = useState([]);
-  const [file, setFile] = useState(null);
+    const [files, setFiles] = useState([]);
+    const [file, setFile] = useState(null);
 
-  const fileInputRef = useRef(null);
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
+    // Get files
+    const fetchFiles = async () => {
+        try {
+            const response = await API.get("/files");
 
-  // =========================
-  // FETCH FILES
-  // =========================
+            setFiles(response.data);
 
-  const fetchFiles = useCallback(async () => {
-    try {
-      const res = await API.get("/files");
+        } catch (error) {
+            alert("Unable to load files");
+        }
+    };
 
-      setFiles(res.data);
-    } catch (err) {
-      console.error("Fetch files error:", err);
+    // Load files when page opens
+    useEffect(() => {
+        fetchFiles();
+    }, []);
 
-      if (
-        err.response?.status === 401 ||
-        err.response?.status === 403
-      ) {
-        alert("Please login first");
-        navigate("/login");
-      } else {
-        alert(
-          err.response?.data?.message ||
-            "Unable to load files"
-        );
-      }
-    }
-  }, [navigate]);
+    // Upload file
+    const uploadFile = async () => {
+        if (!file) {
+            alert("Please select a file");
+            return;
+        }
 
-  // =========================
-  // LOAD FILES
-  // =========================
+        try {
+            const formData = new FormData();
 
-  useEffect(() => {
-    fetchFiles();
-  }, [fetchFiles]);
+            formData.append("file", file);
 
-  // =========================
-  // UPLOAD FILE
-  // =========================
+            await API.post("/files/upload", formData);
 
-  const uploadFile = async () => {
-    if (!file) {
-      alert("Please select a file");
-      return;
-    }
+            alert("File uploaded successfully");
 
-    try {
-      const formData = new FormData();
+            setFile(null);
 
-      formData.append("file", file);
+            fetchFiles();
 
-      await API.post("/files/upload", formData);
+        } catch (error) {
+            alert("File upload failed");
+        }
+    };
 
-      alert("File uploaded successfully ✅");
+    // Delete file
+    const deleteFile = async (id) => {
+        try {
+            await API.delete(`/files/${id}`);
 
-      setFile(null);
+            alert("File deleted successfully");
 
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+            fetchFiles();
 
-      fetchFiles();
-    } catch (err) {
-      console.error("Upload error:", err);
+        } catch (error) {
+            alert("File deletion failed");
+        }
+    };
 
-      if (
-        err.response?.status === 401 ||
-        err.response?.status === 403
-      ) {
-        alert("Please login first");
-        navigate("/login");
-        return;
-      }
+    // Logout
+    const logout = async () => {
+        try {
+            await API.post("/auth/logout");
 
-      alert(
-        err.response?.data?.message ||
-          "File upload failed ❌"
-      );
-    }
-  };
+            alert("Logout successful");
 
-  // =========================
-  // DELETE FILE
-  // =========================
+            navigate("/login");
 
-  const deleteFile = async (id) => {
-    try {
-      await API.delete(`/files/${id}`);
+        } catch (error) {
+            alert("Logout failed");
+        }
+    };
 
-      alert("File deleted successfully ✅");
+    return (
+        <div className="min-h-screen bg-gray-100">
 
-      fetchFiles();
-    } catch (err) {
-      console.error("Delete error:", err);
+            {/* Navbar */}
+            <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
 
-      if (
-        err.response?.status === 401 ||
-        err.response?.status === 403
-      ) {
-        alert("Please login first");
-        navigate("/login");
-        return;
-      }
+                <h1 className="font-bold text-xl">
+                    My Drive
+                </h1>
 
-      alert(
-        err.response?.data?.message ||
-          "File deletion failed ❌"
-      );
-    }
-  };
+                <button
+                    onClick={logout}
+                    className="bg-red-500 px-4 py-1 rounded hover:bg-red-600"
+                >
+                    Logout
+                </button>
 
-  // =========================
-  // LOGOUT
-  // =========================
+            </nav>
 
-  const logout = async () => {
-    try {
-      await API.post("/auth/logout");
+            {/* Main Content */}
+            <div className="p-6">
 
-      alert("Logout successful ✅");
+                {/* Upload Section */}
+                <div className="bg-white p-4 rounded shadow mb-6">
 
-      navigate("/login");
-    } catch (err) {
-      console.error("Logout error:", err);
+                    <h2 className="font-bold mb-3">
+                        Upload File
+                    </h2>
 
-      alert(
-        err.response?.data?.message ||
-          "Logout failed ❌"
-      );
-    }
-  };
+                    <input
+                        type="file"
+                        onChange={(e) =>
+                            setFile(e.target.files[0])
+                        }
+                    />
 
-  // =========================
-  // UI
-  // =========================
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-
-      {/* NAVBAR */}
-      <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
-        <h1 className="font-bold text-xl">
-          My Drive
-        </h1>
-
-        <button
-          type="button"
-          className="bg-red-500 px-4 py-1 rounded hover:bg-red-600"
-          onClick={logout}
-        >
-          Logout
-        </button>
-      </nav>
-
-      {/* MAIN CONTENT */}
-      <div className="p-6">
-
-        {/* UPLOAD SECTION */}
-        <div className="bg-white p-4 rounded shadow mb-6">
-          <h2 className="font-bold mb-3">
-            Upload File
-          </h2>
-
-          <input
-            ref={fileInputRef}
-            id="fileInput"
-            type="file"
-            onChange={(e) =>
-              setFile(e.target.files[0])
-            }
-          />
-
-          <button
-            type="button"
-            onClick={uploadFile}
-            className="ml-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Upload
-          </button>
-        </div>
-
-        {/* FILE LIST */}
-        <h2 className="font-bold text-xl mb-4">
-          My Files
-        </h2>
-
-        {files.length === 0 ? (
-          <p className="text-gray-500">
-            No files uploaded yet.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-            {files.map((f) => (
-              <div
-                key={f._id}
-                className="bg-white p-4 rounded shadow"
-              >
-                <p className="font-medium truncate">
-                  {f.fileName}
-                </p>
-
-                <div className="flex justify-between mt-4">
-
-                  {/* VIEW */}
-                  <a
-                    href={f.fileUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    View
-                  </a>
-
-                  {/* DELETE */}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      deleteFile(f._id)
-                    }
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
+                    <button
+                        onClick={uploadFile}
+                        className="ml-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Upload
+                    </button>
 
                 </div>
-              </div>
-            ))}
 
-          </div>
-        )}
-      </div>
-    </div>
-  );
+                {/* File List */}
+                <h2 className="font-bold text-xl mb-4">
+                    My Files
+                </h2>
+
+                {files.length === 0 ? (
+
+                    <p className="text-gray-500">
+                        No files uploaded yet.
+                    </p>
+
+                ) : (
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                        {files.map((file) => (
+
+                            <div
+                                key={file._id}
+                                className="bg-white p-4 rounded shadow"
+                            >
+
+                                <p className="font-medium truncate">
+                                    {file.fileName}
+                                </p>
+
+                                <div className="flex justify-between mt-4">
+
+                                    <a
+                                        href={file.fileUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-blue-500 hover:underline"
+                                    >
+                                        View
+                                    </a>
+
+                                    <button
+                                        onClick={() =>
+                                            deleteFile(file._id)
+                                        }
+                                        className="text-red-500 hover:text-red-700"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                )}
+
+            </div>
+
+        </div>
+    );
 }
-
