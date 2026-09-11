@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
@@ -9,20 +9,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   // =========================
-  // API URL
-  // =========================
-
-  const API = process.env.REACT_APP_API_URL;
-
-  // =========================
   // FETCH FILES
   // =========================
 
   const fetchFiles = useCallback(async () => {
     try {
-      const res = await axios.get(`${API}/files`, {
-        withCredentials: true,
-      });
+      const res = await API.get("/files");
 
       setFiles(res.data);
     } catch (err) {
@@ -31,7 +23,7 @@ export default function Dashboard() {
       alert("Please login first");
       navigate("/login");
     }
-  }, [API, navigate]);
+  }, [navigate]);
 
   // =========================
   // LOAD FILES
@@ -56,13 +48,7 @@ export default function Dashboard() {
 
       formData.append("file", file);
 
-      await axios.post(
-        `${API}/files/upload`,
-        formData,
-        {
-          withCredentials: true,
-        }
-      );
+      await API.post("/files/upload", formData);
 
       alert("File uploaded successfully");
 
@@ -88,12 +74,7 @@ export default function Dashboard() {
 
   const deleteFile = async (id) => {
     try {
-      await axios.delete(
-        `${API}/files/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
+      await API.delete(`/files/${id}`);
 
       alert("File deleted successfully");
 
@@ -114,13 +95,7 @@ export default function Dashboard() {
 
   const logout = async () => {
     try {
-      await axios.post(
-        `${API}/auth/logout`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      await API.post("/auth/logout");
 
       alert("Logout successful");
 

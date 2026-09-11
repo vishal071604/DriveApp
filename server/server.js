@@ -9,6 +9,12 @@ import fileRoutes from "./routes/fileRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = [
+  "http://localhost:3001",
+  "http://localhost:3000",
+  "https://drive-app-one-zeta.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 connectDB();
 
@@ -17,10 +23,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3001",
-      "https://drive-app-one-zeta.vercel.app",
-    ],
+    origin: allowedOrigins,
     credentials: true,
   })
 );

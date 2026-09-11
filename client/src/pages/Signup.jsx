@@ -1,30 +1,25 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 
-export default function Login() {
+export default function Signup() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
-  // Backend API URL
-  const API = process.env.REACT_APP_API_URL;
-
-  // =========================
-  // LOGIN
-  // =========================
-
-  const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Please enter email and password");
+  const handleSignup = async () => {
+    if (!name || !email || !password) {
+      alert("Please complete all fields");
       return;
     }
 
     try {
-      await axios.post(
-        `${API}/auth/login`,
+      await API.post(
+        "/auth/signup",
         {
+          name,
           email: email,
           password: password,
         },
@@ -33,11 +28,11 @@ export default function Login() {
         }
       );
 
-      alert("Login successful ✅");
+      alert("Signup successful ✅");
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Signup error:", error);
 
       alert(
         error.response?.data?.message ||
@@ -64,9 +59,22 @@ export default function Login() {
           </h2>
 
           <p className="text-slate-400 mt-2 text-sm">
-            Login to continue to your Drive App
+            Register to continue to your Drive App
           </p>
 
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-slate-300 mb-2">
+            Name
+          </label>
+          <input
+            type="text"
+            placeholder="Enter your name"
+            className="w-full rounded-xl bg-slate-800 border border-slate-600 px-4 py-3 text-white placeholder:text-slate-500 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
 
         {/* EMAIL */}
@@ -109,7 +117,7 @@ export default function Login() {
 
         <button
           type="button"
-          onClick={handleLogin}
+          onClick={handleSignup}
           className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 py-3 font-semibold text-white shadow-lg hover:from-blue-600 hover:to-purple-700 active:scale-[0.98] transition"
         >
           Login
