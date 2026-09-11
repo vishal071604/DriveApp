@@ -1,121 +1,214 @@
 # ☁️ DriveApp
 
-### A Secure Cloud Storage Web Application
-
-DriveApp is a cloud storage web application built using the **MERN Stack**. It allows users to securely register, log in, upload files, view their uploaded files, and delete files.
-
-The application uses **JWT authentication, cookies, MongoDB, and ImageKit** to provide secure user authentication and cloud-based file storage.
-
-## Deployment
-
-The frontend and API are separate deployments. The production frontend must know
-the API address at **build time**; otherwise it will call `localhost` in the
-visitor's browser and login/signup will fail.
-
-1. Deploy the `server` directory to Render (or another Node host). Add the
-   variables listed in `server/.env.example`, set `NODE_ENV=production`, and set
-   `CLIENT_URL` to the Vercel frontend URL. Multiple approved frontend URLs can
-   be comma-separated.
-2. Deploy the `client` directory to Vercel. Set
-   `REACT_APP_API_URL` to the Render API URL, for example
-   `https://driveapp-e5m2.onrender.com`, then redeploy. Do not append `/api`.
-3. In MongoDB Atlas, allow the deployed server's network access. Never commit
-   either real `.env` file.
-
----
+A full-stack cloud storage application inspired by Google Drive.  
+Users can create an account, log in securely, upload files, view uploaded files, and delete files.
 
 ## 🚀 Features
 
-### 🔐 Authentication
-
-- User Registration
+- User Signup
 - User Login
-- JWT Authentication
-- Cookie-Based Authentication
-- Protected Routes
-- User Profile
-- Secure Logout
+- Secure password hashing using bcrypt
+- JWT-based authentication
+- HTTP-only authentication cookies
+- Upload files
+- Store files using ImageKit
+- Store file information in MongoDB
+- View uploaded files
+- Delete files
+- Logout
+- Responsive user interface
+- REST API architecture
 
-### 📁 File Management
-
-- Upload Files
-- View Uploaded Files
-- Delete Files
-- User-Specific File Access
-- File Ownership Verification
-- Cloud File Storage
-
-### ☁️ Cloud Storage
-
-- ImageKit Integration
-- Secure File Upload
-- File URLs stored in MongoDB
-- Multer File Handling
-- User-specific file management
-
-### 🎨 Frontend
-
-- Responsive UI
-- React.js
-- Vite
-- Tailwind CSS
-- React Router
-- Axios API Integration
-
----
-
-## 🛠️ Tech Stack
+## 🛠️ Technologies Used
 
 ### Frontend
 
-| Technology | Purpose |
-|------------|---------|
-| React.js | User Interface |
-| Vite | Development & Build Tool |
-| Tailwind CSS | Styling |
-| Axios | API Requests |
-| React Router DOM | Client-side Routing |
+- React.js
+- React Router
+- Axios
+- Tailwind CSS
 
 ### Backend
 
-| Technology | Purpose |
-|------------|---------|
-| Node.js | Runtime Environment |
-| Express.js | Backend Framework |
-| MongoDB | Database |
-| Mongoose | MongoDB ODM |
-| JWT | Authentication |
-| Cookie Parser | Cookie Management |
-| Multer | File Upload Handling |
-| ImageKit | Cloud File Storage |
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT
+- bcryptjs
+- Multer
+- Cookie Parser
+- CORS
 
----
+### Cloud Storage
 
-## 🏗️ Application Architecture
+- ImageKit
+
+### Deployment
+
+- Vercel – Frontend
+- Render – Backend
+- MongoDB Atlas – Database
+- ImageKit – File Storage
+
+## 📁 Project Structure
 
 ```text
-                    ┌─────────────────┐
-                    │      User       │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ React Frontend  │
-                    │      Vite       │
-                    └────────┬────────┘
-                             │
-                        Axios API
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Express Backend │
-                    │    Node.js      │
-                    └────────┬────────┘
-                             │
-                ┌────────────┴────────────┐
-                │                         │
-                ▼                         ▼
-        ┌───────────────┐         ┌───────────────┐
-        │    MongoDB    │         │    ImageKit   │
-        │ Users + Files │         │ Cloud Storage │
-        └───────────────┘         └───────────────┘
+DriveApp/
+│
+├── client/
+│   ├── public/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   └── Dashboard.jsx
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   │
+│   │   ├── App.jsx
+│   │   ├── index.js
+│   │   └── index.css
+│   │
+│   ├── package.json
+│   └── .gitignore
+│
+└── server/
+    ├── config/
+    │   └── imagekit.js
+    │
+    ├── controllers/
+    │   ├── authController.js
+    │   └── fileController.js
+    │
+    ├── database/
+    │   └── db.js
+    │
+    ├── middleware/
+    │   └── authMiddleware.js
+    │
+    ├── models/
+    │   ├── user.js
+    │   └── File.js
+    │
+    ├── routes/
+    │   ├── authRoutes.js
+    │   └── fileRoutes.js
+    │
+    ├── utils/
+    │   └── multer.js
+    │
+    ├── server.js
+    ├── package.json
+    └── .gitignore
+
+🏗️ System Architecture
+
+                  ┌───────────────┐
+                  │     USER      │
+                  └───────┬───────┘
+                          │
+                          ▼
+                  ┌───────────────┐
+                  │ React Frontend│
+                  │   (Vercel)    │
+                  └───────┬───────┘
+                          │
+                       Axios
+                          │
+                          ▼
+                  ┌───────────────┐
+                  │ Node + Express│
+                  │   Backend     │
+                  │   (Render)    │
+                  └───────┬───────┘
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+              ▼                       ▼
+      ┌───────────────┐       ┌───────────────┐
+      │ MongoDB Atlas │       │    ImageKit   │
+      │    Database   │       │ File Storage  │
+      └───────────────┘       └───────────────┘
+
+🔐 Authentication Flow
+
+┌────────┐
+│  User  │
+└───┬────┘
+    │
+    ▼
+┌──────────────┐
+│ Login /      │
+│ Signup       │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ Express API  │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│   MongoDB    │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ JWT Cookie   │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│  Dashboard   │
+└──────────────┘
+
+📤 File Upload Flow
+
+┌──────────────┐
+│ Select File  │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ React Client │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ Express API  │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│   Multer     │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│   ImageKit   │
+│ File Storage │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│   MongoDB    │
+│ File Details │
+└──────────────┘
+
+📂 File Management
+
+                 ┌─────────────┐
+                 │  Dashboard  │
+                 └──────┬──────┘
+                        │
+          ┌─────────────┼─────────────┐
+          │             │             │
+          ▼             ▼             ▼
+     ┌─────────┐   ┌─────────┐   ┌─────────┐
+     │ Upload  │   │  View   │   │ Delete  │
+     └────┬────┘   └────┬────┘   └────┬────┘
+          │             │             │
+          ▼             ▼             ▼
+     ImageKit       File URL      MongoDB
