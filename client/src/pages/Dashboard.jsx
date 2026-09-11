@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 export default function Dashboard() {
   const [files, setFiles] = useState([]);
   const [file, setFile] = useState(null);
+
+  const fileInputRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -20,8 +23,18 @@ export default function Dashboard() {
     } catch (err) {
       console.error("Fetch files error:", err);
 
-      alert("Please login first");
-      navigate("/login");
+      if (
+        err.response?.status === 401 ||
+        err.response?.status === 403
+      ) {
+        alert("Please login first");
+        navigate("/login");
+      } else {
+        alert(
+          err.response?.data?.message ||
+            "Unable to load files"
+        );
+      }
     }
   }, [navigate]);
 
@@ -50,20 +63,31 @@ export default function Dashboard() {
 
       await API.post("/files/upload", formData);
 
-      alert("File uploaded successfully");
+      alert("File uploaded successfully ✅");
 
       setFile(null);
 
       // Reset file input
-      document.getElementById("fileInput").value = "";
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
 
       fetchFiles();
     } catch (err) {
       console.error("Upload error:", err);
 
+      if (
+        err.response?.status === 401 ||
+        err.response?.status === 403
+      ) {
+        alert("Please login first");
+        navigate("/login");
+        return;
+      }
+
       alert(
         err.response?.data?.message ||
-          "File upload failed"
+          "File upload failed ❌"
       );
     }
   };
@@ -76,15 +100,24 @@ export default function Dashboard() {
     try {
       await API.delete(`/files/${id}`);
 
-      alert("File deleted successfully");
+      alert("File deleted successfully ✅");
 
       fetchFiles();
     } catch (err) {
       console.error("Delete error:", err);
 
+      if (
+        err.response?.status === 401 ||
+        err.response?.status === 403
+      ) {
+        alert("Please login first");
+        navigate("/login");
+        return;
+      }
+
       alert(
         err.response?.data?.message ||
-          "File deletion failed"
+          "File deletion failed ❌"
       );
     }
   };
@@ -97,13 +130,16 @@ export default function Dashboard() {
     try {
       await API.post("/auth/logout");
 
-      alert("Logout successful");
+      alert("Logout successful ✅");
 
       navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
 
-      alert("Logout failed");
+      alert(
+        err.response?.data?.message ||
+          "Logout failed ❌"
+      );
     }
   };
 
@@ -115,35 +151,31 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100">
 
       {/* NAVBAR */}
-
       <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
-
         <h1 className="font-bold text-xl">
           My Drive
         </h1>
 
         <button
+          type="button"
           className="bg-red-500 px-4 py-1 rounded hover:bg-red-600"
           onClick={logout}
         >
           Logout
         </button>
-
       </nav>
 
       {/* MAIN CONTENT */}
-
       <div className="p-6">
 
         {/* UPLOAD SECTION */}
-
         <div className="bg-white p-4 rounded shadow mb-6">
-
           <h2 className="font-bold mb-3">
             Upload File
           </h2>
 
           <input
+            ref={fileInputRef}
             id="fileInput"
             type="file"
             onChange={(e) =>
@@ -152,16 +184,15 @@ export default function Dashboard() {
           />
 
           <button
+            type="button"
             onClick={uploadFile}
             className="ml-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Upload
           </button>
-
         </div>
 
         {/* FILE LIST */}
-
         <h2 className="font-bold text-xl mb-4">
           My Files
         </h2>
@@ -174,18 +205,17 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             {files.map((f) => (
-
               <div
                 key={f._id}
                 className="bg-white p-4 rounded shadow"
               >
-
                 <p className="font-medium truncate">
                   {f.fileName}
                 </p>
 
                 <div className="flex justify-between mt-4">
 
+                  {/* VIEW */}
                   <a
                     href={f.fileUrl}
                     target="_blank"
@@ -195,7 +225,9 @@ export default function Dashboard() {
                     View
                   </a>
 
+                  {/* DELETE */}
                   <button
+                    type="button"
                     onClick={() =>
                       deleteFile(f._id)
                     }
@@ -205,16 +237,13 @@ export default function Dashboard() {
                   </button>
 
                 </div>
-
               </div>
-
             ))}
 
           </div>
         )}
-
       </div>
-
     </div>
   );
 }
+

@@ -10,7 +10,14 @@ export const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check user exists
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -23,21 +30,20 @@ export const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
     });
 
     res.status(201).json({
-      message: "User created",
-      user,
+      message: "User created successfully",
     });
   } catch (error) {
     console.error("Signup error:", error);
 
     res.status(500).json({
-      error: error.message,
+      message: "Server error during signup",
     });
   }
 };
@@ -50,7 +56,14 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check user
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // Find user
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -71,7 +84,7 @@ export const login = async (req, res) => {
       });
     }
 
-    // Create JWT token
+    // Create JWT
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
@@ -80,30 +93,27 @@ export const login = async (req, res) => {
       }
     );
 
-    // Detect production environment
+    // Production environment
     const isProduction =
       process.env.NODE_ENV === "production";
 
-    // Store token in cookie
+    // Store JWT in cookie
     res
       .cookie("token", token, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: isProduction
-          ? "none"
-          : "lax",
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(200)
       .json({
         message: "Login success",
       });
-
   } catch (error) {
     console.error("Login error:", error);
 
     res.status(500).json({
-      error: error.message,
+      message: "Server error during login",
     });
   }
 };
@@ -121,20 +131,17 @@ export const logout = async (req, res) => {
       .clearCookie("token", {
         httpOnly: true,
         secure: isProduction,
-        sameSite: isProduction
-          ? "none"
-          : "lax",
+        sameSite: isProduction ? "none" : "lax",
       })
       .status(200)
       .json({
         message: "Logged out successfully",
       });
-
   } catch (error) {
     console.error("Logout error:", error);
 
     res.status(500).json({
-      error: error.message,
+      message: "Server error during logout",
     });
   }
 };
