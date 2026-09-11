@@ -56,27 +56,28 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
+    console.log("LOGIN EMAIL:", email);
+
     if (!email || !password) {
       return res.status(400).json({
         message: "Email and password are required",
       });
     }
 
-    // Find user
     const user = await User.findOne({ email });
 
     if (!user) {
+      console.log("USER NOT FOUND");
       return res.status(400).json({
         message: "Invalid credentials",
       });
     }
 
-    // Compare password
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    console.log("USER FOUND:", user.email);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    console.log("PASSWORD MATCH:", isMatch);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -84,7 +85,6 @@ export const login = async (req, res) => {
       });
     }
 
-    // Create JWT
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
@@ -93,11 +93,8 @@ export const login = async (req, res) => {
       }
     );
 
-    // Production environment
-    const isProduction =
-      process.env.NODE_ENV === "production";
+    const isProduction = process.env.NODE_ENV === "production";
 
-    // Store JWT in cookie
     res
       .cookie("token", token, {
         httpOnly: true,
@@ -109,6 +106,7 @@ export const login = async (req, res) => {
       .json({
         message: "Login success",
       });
+
   } catch (error) {
     console.error("Login error:", error);
 
