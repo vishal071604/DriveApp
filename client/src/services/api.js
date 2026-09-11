@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const configuredUrl =
-  process.env.REACT_APP_API_URL || "http://localhost:3000";
+  process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://driveapp-e5m2.onrender.com"
+    : "http://localhost:3000");
 
 const normalizedUrl = configuredUrl.replace(/\/$/, "");
 

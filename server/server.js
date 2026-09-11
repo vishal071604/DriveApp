@@ -13,13 +13,18 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+const configuredClientOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "http://localhost:3002",
   "https://drive-app-one-zeta.vercel.app",
-  process.env.CLIENT_URL,
-].filter(Boolean);
+  ...configuredClientOrigins,
+];
 
 connectDB();
 

@@ -6,6 +6,22 @@ DriveApp is a cloud storage web application built using the **MERN Stack**. It a
 
 The application uses **JWT authentication, cookies, MongoDB, and ImageKit** to provide secure user authentication and cloud-based file storage.
 
+## Deployment
+
+The frontend and API are separate deployments. The production frontend must know
+the API address at **build time**; otherwise it will call `localhost` in the
+visitor's browser and login/signup will fail.
+
+1. Deploy the `server` directory to Render (or another Node host). Add the
+   variables listed in `server/.env.example`, set `NODE_ENV=production`, and set
+   `CLIENT_URL` to the Vercel frontend URL. Multiple approved frontend URLs can
+   be comma-separated.
+2. Deploy the `client` directory to Vercel. Set
+   `REACT_APP_API_URL` to the Render API URL, for example
+   `https://driveapp-e5m2.onrender.com`, then redeploy. Do not append `/api`.
+3. In MongoDB Atlas, allow the deployed server's network access. Never commit
+   either real `.env` file.
+
 ---
 
 ## 🚀 Features
